@@ -1,2 +1,2 @@
 # Low-Level-Design
-This repo contains all the design pattern and their code
+This repository contains all the popular design pattern.
