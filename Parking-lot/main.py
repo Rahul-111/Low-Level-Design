@@ -1,103 +1,76 @@
 # Problem statement
 # https://github.com/anomaly2104/lld-parking-lot/blob/master/problem-statment.md
 import argparse
-
 from parking import Parking
-
-
-def slot_allocation(parking_area, slot, registration_number, color):
-    parking_area[slot] = {
-        "slot": slot,
-        "registration_number": registration_number,
-        "color": color
-    }
-
-
-def display_allocation(parking_area):
-    for slot in parking_area:
-        print(f"{slot['slot']} , {slot['registration_number']} , {slot['color']}\n")
-
+from execute_commands import execute_command
 
 NO_OF_COMMANDS = 100
 
 
-def main():
-    index = 0
-    while index < NO_OF_COMMANDS:
-        command = input()
-        tokens = command.split(" ")
-        flag = False
-        global parking
+def initialize_parking_lot(no_of_slot):
+    parking_obj = Parking(
+        capacity=no_of_slot,
+        parking_area=[]
+    )
+    return parking_obj
 
-        if command.startswith('create_parking_lot'):
-            # create the parking lot
 
-            if tokens[0] == "create_parking_lot" and (not tokens[1].isalpha()):
-                print(f"Created a parking lot with 6 slots")
-                no_of_slots = int(tokens[1])
-                # print(f"no_of_slots : {no_of_slots}")
-                flag = True
-                parking = Parking(capacity=no_of_slots, parking_area=[])
-
-        elif command.startswith("park"):
-            # park the vehicle
-
-            if tokens[0] == "park":
-                registration_no = tokens[1]
-                color = tokens[2]
-                # print(f"registration_no : {registration_no}")
-                # print(f"color : {color}")
-                flag = True
-                slot = parking.park(
-                    registration_number=registration_no,
-                    color=color
-                )
-                if slot == -1:
-                    print("Sorry, parking lot is full")
-                else:
-                    print(f"Allocated slot number: {slot}")
-
-        elif command.startswith("leave"):
-            # free you slot
-            if tokens[0] == "leave":
-                slot_no = int(tokens[1])
-                # print(f"slot_no : {slot_no}")
-                flag = True
-                parking.free_parking_space(
-                    slot=slot_no
-                )
-
-        elif command.startswith("status"):
-            # show the status
-            if tokens[0] == "status":
-                print(f"Display the status")
-                flag = True
-                parking.display()
-
-        elif command.startswith("registration_numbers_for_cars_with_colour"):
-            # search and display
-            if tokens[0] == "registration_numbers_for_cars_with_colour":
-                parking.display_with_filter(
-                    color=tokens[1],
-                    search_key="registration_number"
-                )
-            flag = True
-
-        elif command.startswith("exit"):
-            # stop the application
-            print("Stopping")
-            break
-        else:
-            print("Please enter correct command")
-
-        if not flag:
-            print(f"Pls check your command")
-            print(f"You entered : {command}")
-
-        index = index + 1
+def read_file(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+        return lines
+    # return commands
 
 
 if __name__ == "__main__":
-    print(f"Parking Lot Running")
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input_mode", type=str, help="file or cmd")
+    argv = vars(parser.parse_args())
+    mode = argv["input_mode"]
+    global parking
+
+    if mode == "file":
+        # read commands from the file
+        print(f"Parking Lot Running")
+        commands = read_file('input_file.txt')
+        for command in commands:
+            command = command.replace('\n', "").split(" ")
+            if command[0] == "create_parking_lot":
+                # add check for input type should be integer
+                parking = initialize_parking_lot(no_of_slot=int(command[1]))
+                continue
+
+            result = execute_command(
+                parking=parking,
+                input_command=command
+            )
+
+            if result == -1:
+                break
+
+    elif mode == "cmd":
+        # start reading the input from the console itself
+        print(f"Parking Lot Running")
+        while True:
+            command = input()
+            if command == "exit":
+                break
+
+            command = command.split(" ")
+            if command[0] == "create_parking_lot":
+                # initialize parking area
+                parking = initialize_parking_lot(no_of_slot=int(command[1]))
+                continue
+
+            result = execute_command(
+                parking=parking,
+                input_command=command
+            )
+
+            if result == -1:
+                break
+
+    else:
+        print(f"You entered wrong input , You entered : {mode}")
+
     print(f"Parking Lot Stops")

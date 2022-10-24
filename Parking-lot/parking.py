@@ -45,16 +45,25 @@ class Parking:
         else:
             print(f"Please check the Input")
 
-    def display_with_filter(self, color, search_key):
+    def display_with_filter(self, filter_by, color=None, search_key=None):
         # loop over array and find car
         result = []
         for slot in self.parking_area:
             if slot != "empty":
-                if slot['color'] == color:
-                    result.append(slot)
+                if filter_by.lower() == "color":
+                    if slot['color'] == color:
+                        result.append(slot)
+                elif filter_by.lower() == "registration_number":
+                    if slot['registration_number'] == search_key:
+                        result.append(slot)
 
         if result:
+            print(f"Slot No,    Registration No,    Color")
             for index, slot in enumerate(result):
-                print(f"{index}        {slot[search_key]}")
+                if slot != "empty":
+                    print(f"{slot['slot']}\t\t{slot['registration_number']}\t\t{slot['color']}")
+
         else:
-            print(f"No Result")
+            print(f"Not Found")
+
+
