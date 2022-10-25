@@ -1,26 +1,10 @@
 # Problem statement
 # https://github.com/anomaly2104/lld-parking-lot/blob/master/problem-statment.md
 import argparse
-from parking import Parking
 from execute_commands import execute_command
+from utils import read_file, initialize_parking_lot
 
 NO_OF_COMMANDS = 100
-
-
-def initialize_parking_lot(no_of_slot):
-    parking_obj = Parking(
-        capacity=no_of_slot,
-        parking_area=[]
-    )
-    return parking_obj
-
-
-def read_file(file):
-    with open(file, 'r') as f:
-        lines = f.readlines()
-        return lines
-    # return commands
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -37,7 +21,9 @@ if __name__ == "__main__":
             command = command.replace('\n', "").split(" ")
             if command[0] == "create_parking_lot":
                 # add check for input type should be integer
-                parking = initialize_parking_lot(no_of_slot=int(command[1]))
+                parking = initialize_parking_lot(
+                    no_of_slot=int(command[1])
+                )
                 continue
 
             result = execute_command(
@@ -59,7 +45,9 @@ if __name__ == "__main__":
             command = command.split(" ")
             if command[0] == "create_parking_lot":
                 # initialize parking area
-                parking = initialize_parking_lot(no_of_slot=int(command[1]))
+                parking = initialize_parking_lot(
+                    no_of_slot=int(command[1])
+                )
                 continue
 
             result = execute_command(
